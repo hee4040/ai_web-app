@@ -1,64 +1,151 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useMemo } from "react";
+import { CategoryTabs } from "@/components/domain/recipe/category-tabs";
+import { SortDropdown } from "@/components/domain/recipe/sort-dropdown";
+import { RecipeCard } from "@/components/domain/recipe/recipe-card";
+
+// TODO: Replace with actual data from Supabase
+const recipes = [
+  {
+    id: 1,
+    title: "Git Configuration for Team Development",
+    description:
+      "Standard Git configuration setup with hooks, branch protection rules, and commit conventions for collaborative development workflows.",
+    category: "Git",
+    tags: ["macOS", "Git 2.40+", "Bash"],
+    createdAt: "Jan 25, 2026",
+  },
+  {
+    id: 2,
+    title: "Docker Development Environment",
+    description:
+      "Multi-stage Docker setup with hot reloading, volume mounts, and optimized build caching for Node.js and Python applications.",
+    category: "Docker",
+    tags: ["Linux", "Docker 24+", "Compose v2"],
+    createdAt: "Jan 24, 2026",
+  },
+  {
+    id: 3,
+    title: "ROS2 Humble Desktop Setup",
+    description:
+      "Complete ROS2 Humble installation with workspace configuration, colcon build tools, and common robotics packages pre-configured.",
+    category: "ROS",
+    tags: ["Ubuntu 22.04", "ROS2 Humble", "Python 3.10"],
+    createdAt: "Jan 22, 2026",
+  },
+  {
+    id: 4,
+    title: "Kubernetes Local Development",
+    description:
+      "Kind cluster setup with ingress, cert-manager, and local registry for testing Kubernetes manifests before production deployment.",
+    category: "Kubernetes",
+    tags: ["Linux/macOS", "Kind 0.20+", "kubectl"],
+    createdAt: "Jan 20, 2026",
+  },
+  {
+    id: 5,
+    title: "Python Virtual Environment",
+    description:
+      "Poetry-based Python environment with pre-commit hooks, type checking, and automated dependency updates for data science projects.",
+    category: "Python",
+    tags: ["Cross-platform", "Python 3.11+", "Poetry"],
+    createdAt: "Jan 18, 2026",
+  },
+  {
+    id: 6,
+    title: "Git LFS for Large Files",
+    description:
+      "Git Large File Storage configuration for repositories with binary assets, models, and datasets exceeding standard size limits.",
+    category: "Git",
+    tags: ["Cross-platform", "Git LFS 3.0+", "Bash"],
+    createdAt: "Jan 15, 2026",
+  },
+  {
+    id: 7,
+    title: "Docker GPU Passthrough",
+    description:
+      "NVIDIA GPU container toolkit setup for machine learning workloads with CUDA support and TensorRT optimization.",
+    category: "Docker",
+    tags: ["Ubuntu 22.04", "Docker 24+", "CUDA 12"],
+    createdAt: "Jan 12, 2026",
+  },
+  {
+    id: 8,
+    title: "ROS2 Gazebo Simulation",
+    description:
+      "Gazebo Fortress simulation environment integrated with ROS2 for robot testing, sensor simulation, and algorithm validation.",
+    category: "ROS",
+    tags: ["Ubuntu 22.04", "Gazebo Fortress", "ROS2 Iron"],
+    createdAt: "Jan 10, 2026",
+  },
+];
+
+const categories = ["All", "Git", "Docker", "ROS", "Kubernetes", "Python"];
 
 export default function Home() {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("latest");
+  // TODO: Replace with actual auth state from useAuth hook
+  const isLoggedIn = false;
+
+  const filteredAndSortedRecipes = useMemo(() => {
+    let filtered = recipes;
+
+    if (activeCategory !== "All") {
+      filtered = recipes.filter((recipe) => recipe.category === activeCategory);
+    }
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortBy === "latest") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      if (sortBy === "oldest") {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+      if (sortBy === "name") {
+        return a.title.localeCompare(b.title);
+      }
+      return 0;
+    });
+
+    return sorted;
+  }, [activeCategory, sortBy]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-background">
+      <main className="mx-auto max-w-5xl px-6 py-8">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <CategoryTabs
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+          />
+          <SortDropdown value={sortBy} onValueChange={setSortBy} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <div className="space-y-4">
+          {filteredAndSortedRecipes.map((recipe) => (
+            <RecipeCard
+              key={recipe.id}
+              id={recipe.id}
+              title={recipe.title}
+              description={recipe.description}
+              category={recipe.category}
+              tags={recipe.tags}
+              createdAt={recipe.createdAt}
+              isLoggedIn={isLoggedIn}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
+
+        {filteredAndSortedRecipes.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-muted-foreground">
+              No recipes found for this category.
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );
