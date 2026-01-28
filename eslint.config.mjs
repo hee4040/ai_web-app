@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // tmp-v0 폴더는 백업용 소스이므로 제외
+    "tmp-v0/**",
   ]),
 ]);
 

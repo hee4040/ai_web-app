@@ -1,1 +1,9 @@
-// 대시보드 공통 레이아웃 (네비게이션 등)
+// Dashboard layout - currently no special layout needed
+// Header is already included in root layout
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
+}
