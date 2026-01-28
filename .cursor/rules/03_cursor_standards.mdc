@@ -1,0 +1,146 @@
+# Cursor Project Rules (envrecipe)
+
+본 문서는 envrecipe 프로젝트에서 Cursor가 따라야 할
+기획(PRD), 사용자 흐름, UI 스타일, 코드 생성 기준을
+하나의 기준으로 통합한 단일 규칙 문서이다.
+
+---
+
+## 1. 목적
+
+- PRD와 서비스 흐름을 벗어나는 코드 생성을 방지한다.
+- Phase 1(MVP)와 Phase 2(고도화)를 명확히 분리한다.
+- Cursor의 과도한 추론, 기능 확장, UX 변경을 제한한다.
+
+---
+
+## 2. 프로젝트 범위 및 Phase 규칙
+
+### Phase 1 (MVP)
+
+- PRD에 명시된 기능만 구현한다.
+- 사용자 흐름은 다음 순서를 반드시 따른다.
+
+  Login  
+  → Recipe List  
+  → Recipe Detail  
+  → Create Recipe  
+  → Submit  
+  → Home
+
+- 최신순 정렬(`created_at DESC`)만 허용한다.
+- AI 기능은 Recipe 작성 시 1회 호출만 허용한다.
+
+### Phase 1에서 금지되는 사항
+
+- Drag & Drop
+- 이미지 다중 업로드
+- 공감(Like), 북마크, 마이페이지
+- 다중 태그 필터, 고급 검색
+- 리스트/상세 진입 시 AI 재호출
+- Phase 2 기능의 선제 구현
+
+---
+
+## 3. UI / UX 규칙
+
+### 기본 원칙
+
+- 단순하고 정보 중심적인 UI를 유지한다.
+- 서비스 UI가 아닌 “개발자 문서”에 가까운 톤을 유지한다.
+- 불필요한 애니메이션과 장식 요소는 배제한다.
+
+### 페이지 구성
+
+- Landing Page
+- Home (Recipe List)
+- Recipe Detail
+- Create Recipe
+
+### Home (Recipe List)
+
+- 카테고리 탭은 상단 고정
+- 카드형 리스트 사용
+- 카드에는 제목, 카테고리, 작성일만 표시
+
+### Recipe Detail
+
+- 상단에 메타 정보 배치
+- Step-by-Step 구조는 순서 고정
+- Step당 이미지 최대 1장
+- AI 요약 결과는 별도 섹션으로 분리
+
+### Create Recipe
+
+- 단일 Form 구조
+- Step은 배열 기반 입력
+- 이미지 업로드는 Step 단위로만 허용
+
+---
+
+## 4. 기술 스택 및 UI 구현 규칙
+
+- Next.js App Router 사용
+- Server Component 우선
+- Client Component는 Form 및 인터랙션에만 사용
+- Tailwind CSS 또는 V0 기본 스타일 사용
+
+---
+
+## 5. 파일 및 디렉토리 구조 규칙
+
+- 기능 단위(feature-based) 구조를 따른다.
+- UI, 로직, 데이터 접근을 하나의 파일에 혼합하지 않는다.
+
+구조 원칙:
+- components: UI 전용
+- actions: 생성/수정/삭제 로직
+- queries: 읽기 전용 데이터 접근
+
+---
+
+## 6. 데이터 접근 규칙 (Supabase)
+
+- 모든 DB 접근은 query 또는 action을 통해서만 수행한다.
+- UI 컴포넌트 내부에서 Supabase client 직접 호출 금지
+- Supabase Storage는 이미지 업로드 용도로만 사용
+- DB 스키마 변경은 PRD 변경 없이 수행하지 않는다.
+
+---
+
+## 7. AI 기능 규칙
+
+- AI는 보조 도구이며 판단 주체가 아니다.
+- AI 호출은 Recipe 작성 시 1회만 허용한다.
+- AI 결과는 반드시 DB에 저장한다.
+- AI 응답은 raw text 형태로 저장한다.
+- AI 결과를 조건 분기나 UI 판단 로직에 사용하지 않는다.
+
+---
+
+## 8. 주석 및 TODO 규칙
+
+- Phase 2 기능은 반드시 TODO로만 명시한다.
+- TODO는 구현이 아닌 의도 표현에 그친다.
+- 주석은 “무엇”이 아니라 “왜”를 설명해야 한다.
+
+---
+
+## 9. 금지 사항 요약
+
+Cursor는 다음 행위를 절대 수행해서는 안 된다.
+
+- PRD에 없는 기능 구현
+- Phase 1 범위를 넘어서는 자동 확장
+- 사용자 흐름 변경
+- UX 구조를 임의로 수정
+- “더 좋아 보인다”는 주관적 판단 기반 수정
+
+---
+
+## 10. Cursor 행동 원칙
+
+- PRD가 최우선 기준이다.
+- Phase 구분은 반드시 존중한다.
+- 단순함이 항상 정답이다.
+- MVP 완성이 목표이며, 완벽함은 목표가 아니다.

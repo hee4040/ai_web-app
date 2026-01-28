@@ -1,0 +1,89 @@
+# Style & UI Rules (envrecipe)
+
+## 목적
+
+본 문서는 envrecipe 서비스의 UI / UX 일관성을 유지하기 위한 규칙을 정의한다.  
+Phase 1(MVP) 구현에 집중하며, 과도한 인터랙션이나 시각적 장식은 배제한다.
+
+---
+
+## 기본 UI 원칙
+
+- 단순하고 정보 중심적인 UI를 유지한다.
+- “서비스”보다는 “개발자 문서”에 가까운 톤을 지향한다.
+- 시각적 화려함보다 **가독성, 구조, 흐름**을 우선한다.
+- 불필요한 애니메이션, 마이크로 인터랙션은 Phase 2로 이관한다.
+
+---
+
+## 페이지 구성 규칙
+
+### 필수 페이지
+
+- Landing Page
+- Home (Recipe List Page)
+- Recipe Detail Page
+- Create Recipe Page
+
+---
+
+### Home (Recipe List Page)
+
+- 카테고리 탭은 페이지 상단에 위치
+- 정렬 옵션은 최신순만 제공
+- Recipe는 카드형 리스트로 표현
+- 카드에는 최소 정보만 노출
+  - 제목
+  - 카테고리
+  - 작성일
+
+---
+
+### Recipe Detail Page
+
+- 상단에 Recipe 메타 정보 배치
+  - 제목
+  - 카테고리
+  - 태그
+- Step-by-Step 설정 과정은 순서 고정
+- Step당 이미지 최대 1장만 노출
+- AI 보조 결과는 별도 섹션으로 분리하여 표시
+
+---
+
+### Create Recipe Page
+
+- 단일 Form 구조 유지
+- Step 입력은 배열 기반 UI
+- 이미지 업로드는 Step 단위로만 허용
+- Drag & Drop 금지 (Phase 2)
+
+---
+
+## UI 기술 스택 규칙
+
+- Next.js App Router 사용
+- Server Component 우선 설계
+- Client Component는 다음 경우에만 허용
+  - Form 입력
+  - 버튼 인터랙션
+- 스타일링은 Tailwind CSS 또는 V0 기본 스타일 사용
+
+---
+
+## 접근성 및 가독성
+
+- 모든 버튼은 명확한 텍스트 라벨을 가져야 한다.
+- 아이콘 단독 사용 금지 (텍스트 병행 필수)
+- 에러 메시지는 기술적이되 과장되지 않게 표현한다.
+
+---
+
+## Phase 구분 규칙 (UI)
+
+- Phase 2 UI 기능은 구현하지 않는다.
+- 반드시 주석 또는 TODO로만 명시한다.
+
+예시:
+```ts
+// Phase 2 TODO: Drag & Drop step reordering UI

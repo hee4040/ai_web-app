@@ -1,0 +1,61 @@
+# Project Rules: PRD & User Flow Compliance
+
+## 목적
+이 프로젝트는 "envrecipe" 서비스의 Phase 1 / Phase 2 분리 PRD를
+엄격히 준수하는 것을 최우선 목표로 한다.
+
+Cursor는 아래의 기획, 흐름, 범위를 벗어나는 제안/코드를 생성해서는 안 된다.
+
+---
+
+## Phase 1 (MVP) 범위 규칙
+
+### 허용되는 기능
+- Google OAuth 기반 로그인 (Supabase Auth)
+- Recipe CRUD (Create / Read / Delete)
+- 단일 카테고리 기반 탐색
+- 최신순 정렬 (`created_at DESC`)
+- Step 기반 Recipe 구조 (텍스트 + Step당 이미지 0~1장)
+- AI 보조 기능 (작성 시 1회 호출, 결과 DB 저장)
+
+### 금지되는 기능 (Phase 1)
+- Drag & Drop
+- 이미지 다중 업로드
+- 다중 태그 필터링
+- 공감(Like), 북마크
+- 마이페이지
+- AI 재호출 (리스트/상세 진입 시)
+
+---
+
+## 사용자 흐름 강제 규칙 (Flow)
+
+Cursor가 생성하는 모든 UI / 로직은 아래 흐름을 벗어나면 안 된다.
+
+1. Landing Page
+2. 로그인 여부 확인
+3. Google Login (미로그인 시)
+4. Home
+5. Recipe List (카테고리 / 정렬)
+6. Recipe Detail
+7. (선택) AI Assist Result
+8. Create Recipe → Submit → Home
+
+---
+
+## 데이터 흐름 규칙
+
+- 모든 Recipe는 반드시 DB(Supabase)에 저장되어야 한다.
+- AI 결과는 호출 즉시 DB에 저장하며, 화면 렌더링 시 재호출하지 않는다.
+- Storage(Supabase)는 이미지 업로드 용도로만 사용한다.
+
+---
+
+## Phase 구분 규칙
+
+Cursor는 Phase 2 기능을 구현하려 할 경우,
+반드시 주석 또는 TODO로 명시해야 하며 실제 구현은 금지한다.
+
+예시:
+```ts
+// Phase 2 TODO: Drag & Drop step reordering
