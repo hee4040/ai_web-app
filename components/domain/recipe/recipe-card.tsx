@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 interface RecipeCardProps {
   id: number;
@@ -13,7 +16,6 @@ interface RecipeCardProps {
   category: string;
   tags: string[];
   createdAt: string;
-  isLoggedIn?: boolean;
   initialBookmarked?: boolean;
 }
 
@@ -32,16 +34,30 @@ export function RecipeCard({
   category,
   tags,
   createdAt,
-  isLoggedIn = false,
   initialBookmarked = false,
 }: RecipeCardProps) {
+  const router = useRouter();
+  const { user } = useAuth();
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // 비로그인 시 로그인 안내
+    if (!user) {
+      toast.info("로그인이 필요합니다", {
+        description: "북마크 기능을 사용하려면 로그인해주세요.",
+        action: {
+          label: "로그인",
+          onClick: () => router.push("/login"),
+        },
+      });
+      return;
+    }
+
+    // 로그인한 경우 북마크 토글 (실제 API 연동은 상세 페이지에서 처리)
     setIsBookmarked(!isBookmarked);
-    // TODO: Phase 2 - 북마크 API 연동
   };
 
   return (

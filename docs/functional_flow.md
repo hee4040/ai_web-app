@@ -806,15 +806,15 @@
 
 | # | 항목 | 구현 | 테스트 | 관련 파일 |
 |---|------|:----:|:------:|-----------|
-| 1.1 | Supabase 클라이언트 (클라이언트) | [ ] | [ ] | `lib/supabase/client.ts` |
-| 1.2 | Supabase 클라이언트 (서버) | [ ] | [ ] | `lib/supabase/server.ts` |
-| 1.3 | 인증 상태 페칭 및 관리 | [ ] | [ ] | `hooks/use-auth.ts` |
-| 1.4 | Google OAuth 로그인 플로우 | [ ] | [ ] | `app/(auth)/login/page.tsx`, `app/(auth)/callback/page.tsx` |
-| 1.5 | 로그아웃 플로우 | [ ] | [ ] | `hooks/use-auth.ts`, `components/domain/auth/user-menu.tsx` |
-| 1.6 | 카테고리 목록 데이터 페칭 | [ ] | [ ] | `app/page.tsx` |
-| 1.7 | 미들웨어 설정 | [ ] | [ ] | `middleware.ts` |
+| 1.1 | Supabase 클라이언트 (클라이언트) | [x] | [ ] | `lib/supabase/client.ts` |
+| 1.2 | Supabase 클라이언트 (서버) | [x] | [ ] | `lib/supabase/server.ts` |
+| 1.3 | 인증 상태 페칭 및 관리 | [x] | [ ] | `hooks/use-auth.ts` |
+| 1.4 | Google OAuth 로그인 플로우 | [x] | [ ] | `app/(auth)/login/page.tsx`, `app/(auth)/callback/page.tsx` |
+| 1.5 | 로그아웃 플로우 | [x] | [ ] | `hooks/use-auth.ts`, `components/domain/auth/user-menu.tsx` |
+| 1.6 | 카테고리 목록 데이터 페칭 | [x] | [ ] | `app/page.tsx` |
+| 1.7 | 미들웨어 설정 | [x] | [ ] | `middleware.ts` |
 
-**Phase 1 완료율**: 0 / 7
+**Phase 1 완료율**: 7 / 7 (구현 완료)
 
 ---
 
@@ -822,19 +822,19 @@
 
 | # | 항목 | 구현 | 테스트 | 관련 파일 |
 |---|------|:----:|:------:|-----------|
-| 2.1 | 공개 레시피 목록 페칭 | [ ] | [ ] | `app/page.tsx` |
-| 2.2 | 레시피 상세 데이터 페칭 | [ ] | [ ] | `app/recipes/[id]/page.tsx` |
-| 2.3 | 레시피 작성 폼 제출 | [ ] | [ ] | `app/recipes/create/actions.ts`, `app/recipes/create/page.tsx` |
-| 2.4 | 내가 작성한 레시피 목록 페칭 | [ ] | [ ] | `app/mypage/page.tsx` |
-| 2.5 | 레시피 수정 데이터 로드 | [ ] | [ ] | `app/recipes/[id]/edit/page.tsx` |
-| 2.6 | 레시피 수정 데이터 제출 | [ ] | [ ] | `app/recipes/[id]/edit/actions.ts` |
-| 2.7 | 레시피 삭제 | [ ] | [ ] | `app/mypage/actions.ts` 또는 `app/recipes/[id]/actions.ts` |
-| 2.8 | 공개/비공개 토글 | [ ] | [ ] | `app/mypage/actions.ts`, `app/mypage/page.tsx` |
-| 2.9 | AI 보조 기능 호출 및 결과 저장 | [ ] | [ ] | `app/api/ai/route.ts`, `app/recipes/create/actions.ts` |
-| 2.10 | 북마크한 레시피 목록 페칭 | [ ] | [ ] | `app/mypage/page.tsx` |
-| 2.11 | 북마크 추가/삭제 | [ ] | [ ] | `app/recipes/[id]/actions.ts`, `components/domain/recipe/bookmark-button.tsx` |
+| 2.1 | 공개 레시피 목록 페칭 | [x] | [ ] | `app/page.tsx` |
+| 2.2 | 레시피 상세 데이터 페칭 | [x] | [ ] | `app/recipes/[id]/page.tsx` |
+| 2.3 | 레시피 작성 폼 제출 | [x] | [ ] | `app/recipes/create/actions.ts`, `app/recipes/create/page.tsx` |
+| 2.4 | 내가 작성한 레시피 목록 페칭 | [x] | [ ] | `app/mypage/page.tsx` |
+| 2.5 | 레시피 수정 데이터 로드 | [x] | [ ] | `app/recipes/[id]/edit/page.tsx` |
+| 2.6 | 레시피 수정 데이터 제출 | [x] | [ ] | `app/recipes/[id]/edit/actions.ts` |
+| 2.7 | 레시피 삭제 | [x] | [ ] | `app/mypage/actions.ts` |
+| 2.8 | 공개/비공개 토글 | [x] | [ ] | `app/mypage/actions.ts`, `app/mypage/page.tsx` |
+| 2.9 | AI 보조 기능 호출 및 결과 저장 | [ ] | [ ] | `app/api/ai/route.ts`, `app/recipes/create/actions.ts` (제외) |
+| 2.10 | 북마크한 레시피 목록 페칭 | [x] | [ ] | `app/mypage/page.tsx` |
+| 2.11 | 북마크 추가/삭제 | [x] | [ ] | `app/recipes/[id]/actions.ts`, `components/domain/recipe/bookmark-button.tsx` |
 
-**Phase 2 완료율**: 0 / 11
+**Phase 2 완료율**: 10 / 11 (AI 보조 기능 제외)
 
 ---
 
@@ -861,10 +861,10 @@
 
 | Phase | 완료 | 전체 | 비율 |
 |-------|-----:|-----:|------|
-| Phase 1 | 0 | 7 | 0% |
-| Phase 2 | 0 | 11 | 0% |
+| Phase 1 | 7 | 7 | 100% |
+| Phase 2 | 10 | 11 | 91% (AI 제외) |
 | Phase 3 | 0 | 10 | 0% |
-| **합계** | **0** | **28** | **0%** |
+| **합계** | **17** | **28** | **61%** |
 
 ---
 
@@ -873,113 +873,113 @@
 아래는 각 항목별 **구현 내용**을 한 줄씩 나열한 체크리스트입니다. 세부 작업 단위로 진행할 때 사용하세요.
 
 #### 1.1 Supabase 클라이언트 (클라이언트)
-- [ ] 패키지 설치 (`@supabase/supabase-js`, `@supabase/ssr`)
-- [ ] `createBrowserClient` 구현
-- [ ] `Database` 타입 제네릭 적용
-- [ ] 환경 변수 검증
+- [x] 패키지 설치 (`@supabase/supabase-js`, `@supabase/ssr`)
+- [x] `createBrowserClient` 구현
+- [x] `Database` 타입 제네릭 적용
+- [x] 환경 변수 검증
 
 #### 1.2 Supabase 클라이언트 (서버)
-- [ ] `createServerClient` 구현
-- [ ] 쿠키 기반 세션 관리
-- [ ] `Database` 타입 제네릭 적용
-- [ ] async 함수로 구현
+- [x] `createServerClient` 구현
+- [x] 쿠키 기반 세션 관리
+- [x] `Database` 타입 제네릭 적용
+- [x] async 함수로 구현
 
 #### 1.3 인증 상태 페칭 및 관리
-- [ ] `useAuth` 훅 구현
-- [ ] `getUser()` 초기 페칭
-- [ ] `onAuthStateChange()` 구독
-- [ ] `user`, `loading` 반환
-- [ ] 구독 해제 (cleanup)
+- [x] `useAuth` 훅 구현
+- [x] `getUser()` 초기 페칭
+- [x] `onAuthStateChange()` 구독
+- [x] `user`, `loading` 반환
+- [x] 구독 해제 (cleanup)
 
 #### 1.4 Google OAuth 로그인
-- [ ] `signInWithGoogle()` 함수 추가
-- [ ] 로그인 버튼 핸들러 연결
-- [ ] `redirectTo` 설정
-- [ ] 콜백에서 `code` 추출
-- [ ] `exchangeCodeForSession()` 호출
-- [ ] 성공/실패 리다이렉트 처리
+- [x] `signInWithGoogle()` 함수 추가
+- [x] 로그인 버튼 핸들러 연결
+- [x] `redirectTo` 설정
+- [x] 콜백에서 `code` 추출
+- [x] `exchangeCodeForSession()` 호출
+- [x] 성공/실패 리다이렉트 처리
 
 #### 1.5 로그아웃
-- [ ] `signOut()` 함수 추가
-- [ ] UserMenu 로그아웃 버튼 연결
-- [ ] 로그아웃 후 홈 리다이렉트
+- [x] `signOut()` 함수 추가
+- [x] UserMenu 로그아웃 버튼 연결
+- [x] 로그아웃 후 홈 리다이렉트
 
 #### 1.6 카테고리 목록 페칭
-- [ ] Server Component에서 `categories` 조회
-- [ ] `sort_order` 정렬
-- [ ] CategoryTabs에 데이터 전달
+- [x] Server Component에서 `categories` 조회
+- [x] `sort_order` 정렬
+- [x] CategoryTabs에 데이터 전달
 
 #### 1.7 미들웨어
-- [ ] `middleware.ts` 생성
-- [ ] Supabase 클라이언트 생성 및 `getUser()` 호출
-- [ ] 쿠키 동기화
-- [ ] matcher 설정
+- [x] `middleware.ts` 생성
+- [x] Supabase 클라이언트 생성 및 `getUser()` 호출
+- [x] 쿠키 동기화
+- [x] matcher 설정
 
 #### 2.1 공개 레시피 목록 페칭
-- [ ] `posts` + `categories` 조인 조회
-- [ ] `is_public = true` 필터
-- [ ] URL 파라미터 기반 카테고리/정렬
-- [ ] RecipeList에 데이터 전달
+- [x] `posts` + `categories` 조인 조회
+- [x] `is_public = true` 필터
+- [x] URL 파라미터 기반 카테고리/정렬
+- [x] RecipeList에 데이터 전달
 
 #### 2.2 레시피 상세 페칭
-- [ ] `posts` 단건 조회 (categories, profiles 조인)
-- [ ] `post_steps` 조회 및 정렬
-- [ ] `notFound()` 처리
-- [ ] RecipeDetail, StepCard, TroubleshootingSection 바인딩
+- [x] `posts` 단건 조회 (categories, profiles 조인)
+- [x] `post_steps` 조회 및 정렬
+- [x] `notFound()` 처리
+- [x] RecipeDetail, StepCard, TroubleshootingSection 바인딩
 
 #### 2.3 레시피 작성
-- [ ] Server Action 인증 확인
-- [ ] FormData 파싱
-- [ ] `posts` INSERT
-- [ ] `post_steps` INSERT (반복)
-- [ ] Storage 이미지 업로드
-- [ ] `revalidatePath` 호출
+- [x] Server Action 인증 확인
+- [x] FormData 파싱
+- [x] `posts` INSERT
+- [x] `post_steps` INSERT (반복)
+- [x] Storage 이미지 업로드
+- [x] `revalidatePath` 호출
 
 #### 2.4 내 레시피 목록
-- [ ] 인증 확인 및 리다이렉트
-- [ ] `posts` where `user_id = auth.uid()` 조회
-- [ ] categories 조인
-- [ ] My Recipes 섹션 바인딩
+- [x] 인증 확인 및 리다이렉트
+- [x] `posts` where `user_id = auth.uid()` 조회
+- [x] categories 조인
+- [x] My Recipes 섹션 바인딩
 
 #### 2.5 레시피 수정 로드
-- [ ] edit 페이지 인증/작성자 확인
-- [ ] `posts` + `post_steps` 조회
-- [ ] RecipeForm에 initialData 전달
+- [x] edit 페이지 인증/작성자 확인
+- [x] `posts` + `post_steps` 조회
+- [x] RecipeForm에 initialData 전달
 
 #### 2.6 레시피 수정 제출
-- [ ] Server Action 작성자 확인
-- [ ] `posts` UPDATE
-- [ ] 기존 `post_steps` DELETE 후 재INSERT
-- [ ] 이미지 업로드 처리
-- [ ] `revalidatePath` 호출
+- [x] Server Action 작성자 확인
+- [x] `posts` UPDATE
+- [x] 기존 `post_steps` DELETE 후 재INSERT
+- [x] 이미지 업로드 처리
+- [x] `revalidatePath` 호출
 
 #### 2.7 레시피 삭제
-- [ ] Server Action 작성자 확인
-- [ ] `posts` DELETE
-- [ ] `revalidatePath` 호출
-- [ ] 마이페이지 삭제 버튼/다이얼로그 연동
+- [x] Server Action 작성자 확인
+- [x] `posts` DELETE
+- [x] `revalidatePath` 호출
+- [x] 마이페이지 삭제 버튼/다이얼로그 연동
 
 #### 2.8 공개/비공개 토글
-- [ ] Server Action 작성자 확인
-- [ ] `posts.is_public` UPDATE
-- [ ] `revalidatePath` 호출
-- [ ] 마이페이지 토글 버튼 연동
+- [x] Server Action 작성자 확인
+- [x] `posts.is_public` UPDATE
+- [x] `revalidatePath` 호출
+- [x] 마이페이지 토글 버튼 연동
 
 #### 2.9 AI 보조 기능
-- [ ] AI API Route 구현
-- [ ] 레시피 저장 후 비동기 AI 호출
-- [ ] `posts` UPDATE (ai_summary, ai_keywords, troubleshooting_notes)
-- [ ] 에러 처리 (실패해도 레시피 유지)
+- [ ] AI API Route 구현 (이번 작업 범위에서 제외)
+- [ ] 레시피 저장 후 비동기 AI 호출 (이번 작업 범위에서 제외)
+- [ ] `posts` UPDATE (ai_summary, ai_keywords, troubleshooting_notes) (이번 작업 범위에서 제외)
+- [ ] 에러 처리 (실패해도 레시피 유지) (이번 작업 범위에서 제외)
 
 #### 2.10 북마크 목록 페칭
-- [ ] `bookmarks` + `posts` + `categories` + `profiles` 조인 조회
-- [ ] Bookmarked Recipes 섹션 바인딩
+- [x] `bookmarks` + `posts` + `categories` + `profiles` 조인 조회
+- [x] Bookmarked Recipes 섹션 바인딩
 
 #### 2.11 북마크 추가/삭제
-- [ ] Server Action 인증 확인
-- [ ] `bookmarks` INSERT/DELETE
-- [ ] BookmarkButton 연동
-- [ ] `revalidatePath` 호출
+- [x] Server Action 인증 확인
+- [x] `bookmarks` INSERT/DELETE
+- [x] BookmarkButton 연동
+- [x] `revalidatePath` 호출
 
 #### 3.1 로딩 상태
 - [ ] 페칭 훅에 `loading` 상태 추가

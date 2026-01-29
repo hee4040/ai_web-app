@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 /**
  * 루트 글로벌 오류 바운더리.
@@ -74,7 +75,7 @@ export default function GlobalError({
               justifyContent: "center",
             }}
           >
-            <a
+            <Link
               href="/"
               style={{
                 display: "inline-flex",
@@ -113,7 +114,7 @@ export default function GlobalError({
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
               메인으로 돌아가기
-            </a>
+            </Link>
 
             <button
               type="button"

@@ -1,152 +1,99 @@
-import { Badge } from "@/components/ui/badge";
-import { StepCard } from "@/components/domain/recipe/step-card";
-import { TroubleshootingSection } from "@/components/domain/recipe/troubleshooting-section";
-import { BookmarkButton } from "@/components/domain/recipe/bookmark-button";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { RecipeDetailView } from "./recipe-detail-view";
+import type { Post, PostStep, Category } from "@/types/database";
+import { recipeDetailRowToDetail } from "@/types/recipe";
+import { formatDate } from "@/lib/utils/format";
 
-// TODO: Replace with actual data from Supabase
-const recipeData = {
-  id: 1,
-  title: "Git Configuration for Team Development",
-  description:
-    "Standard Git configuration setup with hooks, branch protection rules, and commit conventions for collaborative development workflows. This guide covers everything from initial setup to advanced team collaboration patterns.",
-  category: "Git",
-  tags: ["macOS", "Git 2.40+", "Bash"],
-  createdAt: "Jan 25, 2026",
-  steps: [
-    {
-      id: 1,
-      content:
-        "Install Git using Homebrew. Open your terminal and run: brew install git. This will install the latest version of Git along with all necessary dependencies.",
-    },
-    {
-      id: 2,
-      content:
-        "Configure your global Git identity. Set your name and email that will be associated with your commits: git config --global user.name \"Your Name\" and git config --global user.email \"your@email.com\".",
-      imageUrl: "/placeholder-git-config.jpg",
-    },
-    {
-      id: 3,
-      content:
-        "Set up SSH keys for secure authentication with remote repositories. Generate a new SSH key: ssh-keygen -t ed25519 -C \"your@email.com\". Then add it to your SSH agent.",
-    },
-    {
-      id: 4,
-      content:
-        "Configure Git hooks for your repository. Create a .githooks directory and set up pre-commit hooks for linting and formatting. Update the hooks path: git config core.hooksPath .githooks.",
-      imageUrl: "/placeholder-hooks.jpg",
-    },
-    {
-      id: 5,
-      content:
-        "Set up branch protection rules in your Git hosting platform (GitHub/GitLab). Require pull request reviews, status checks, and prevent force pushes to main/master branches.",
-    },
-  ],
-  troubleshooting: {
-    aiSummary:
-      "Most issues with this setup stem from SSH key permissions, conflicting global configs, or hook execution permissions. Ensure your SSH key has 600 permissions, check for local .gitconfig files that might override global settings, and make sure hook scripts are executable (chmod +x).",
-    notes: [
-      {
-        id: 1,
-        title: "SSH Permission Denied",
-        description:
-          "If you see 'Permission denied (publickey)', ensure your SSH key is added to the agent with ssh-add and that the public key is registered with your Git provider. Check key permissions with ls -la ~/.ssh/.",
-      },
-      {
-        id: 2,
-        title: "Hooks Not Running",
-        description:
-          "Git hooks must be executable. Run chmod +x .githooks/* to fix permission issues. Also verify the hooks path is set correctly with git config --get core.hooksPath.",
-      },
-      {
-        id: 3,
-        title: "Global Config Not Applied",
-        description:
-          "Local repository configs override global settings. Check for a local .git/config file that might have conflicting values. Use git config --list --show-origin to see all config sources.",
-      },
-    ],
-  },
-};
+interface RecipeDetailPageProps {
+  params: Promise<{ id: string }>;
+}
 
-const categoryColors: Record<string, string> = {
-  Git: "bg-orange-500/15 text-orange-600 border-orange-500/20",
-  Docker: "bg-blue-500/15 text-blue-600 border-blue-500/20",
-  ROS: "bg-emerald-500/15 text-emerald-600 border-emerald-500/20",
-  Kubernetes: "bg-cyan-500/15 text-cyan-600 border-cyan-500/20",
-  Python: "bg-yellow-500/15 text-yellow-600 border-yellow-500/20",
-};
+/**
+ * 레시피 상세 페이지 (서버 컴포넌트)
+ * posts + post_steps + categories + profiles 조회
+ */
+export default async function RecipeDetailPage({
+  params,
+}: RecipeDetailPageProps) {
+  const { id } = await params;
+  const postId = parseInt(id, 10);
 
-export default function RecipeDetailPage() {
+  if (isNaN(postId)) {
+    notFound();
+  }
+
+  const supabase = await createClient();
+
+  // posts 테이블에서 레시피 조회 (categories, profiles 조인)
+  const { data: post, error: postError } = await supabase
+    .from("posts")
+    .select("*, categories(*), profiles!posts_user_id_fkey(display_name)")
+    .eq("id", postId)
+    .single();
+
+  if (postError || !post) {
+    console.error("Error fetching post:", postError);
+    notFound();
+  }
+
+  const postData = post as Post & {
+    categories: Category | null;
+    profiles: { display_name: string | null } | null;
+  };
+
+  // 비공개 레시피 접근 제한 (RLS 정책으로도 보호되지만 이중 체크)
+  if (!postData.is_public) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user || user.id !== postData.user_id) {
+      notFound();
+    }
+  }
+
+  // post_steps 테이블에서 단계별 정보 조회
+  const { data: steps, error: stepsError } = await supabase
+    .from("post_steps")
+    .select("*")
+    .eq("post_id", postId)
+    .order("sort_order", { ascending: true });
+
+  if (stepsError) {
+    console.error("Error fetching steps:", stepsError);
+  }
+
+  const stepsData = (steps || []) as PostStep[];
+
+  // 타입 변환
+  const recipeDetail = recipeDetailRowToDetail(
+    {
+      post: postData,
+      steps: stepsData,
+      categoryName: postData.categories?.name || "Unknown",
+    },
+    formatDate(postData.created_at)
+  );
+
+  // 북마크 상태 확인 (로그인한 경우)
+  let isBookmarked = false;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    const { data: bookmark } = await supabase
+      .from("bookmarks")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("post_id", postId)
+      .single();
+    isBookmarked = !!bookmark;
+  }
+
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-6 py-8">
-      <Link
-        href="/"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to recipes
-      </Link>
-
-      <header className="mb-8 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">
-              {recipeData.title}
-            </h1>
-            <Badge
-              variant="outline"
-              className={`text-xs font-medium ${
-                categoryColors[recipeData.category] ||
-                "bg-muted text-muted-foreground border-border"
-              }`}
-            >
-              {recipeData.category}
-            </Badge>
-          </div>
-          <BookmarkButton recipeId={recipeData.id} />
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {recipeData.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-muted px-2.5 py-1 text-xs text-muted-foreground"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <p className="leading-relaxed text-muted-foreground">
-          {recipeData.description}
-        </p>
-
-        <p className="text-sm text-muted-foreground">
-          Created {recipeData.createdAt}
-        </p>
-      </header>
-
-      <section className="mb-12 space-y-6">
-        <h2 className="text-xl font-semibold text-foreground">
-          Step-by-Step Guide
-        </h2>
-        <div className="space-y-4">
-          {recipeData.steps.map((step) => (
-            <StepCard
-              key={step.id}
-              stepNumber={step.id}
-              content={step.content}
-              imageUrl={step.imageUrl}
-            />
-          ))}
-        </div>
-      </section>
-
-      <TroubleshootingSection
-        aiSummary={recipeData.troubleshooting.aiSummary}
-        notes={recipeData.troubleshooting.notes}
-      />
-    </main>
+    <RecipeDetailView
+      recipe={recipeDetail}
+      initialBookmarked={isBookmarked}
+    />
   );
 }
