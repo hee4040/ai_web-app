@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 /**
  * 레시피 수정 Server Action
+ * - 성공 시 클라이언트에서 라우팅할 수 있도록 결과만 반환한다.
  */
 export async function updateRecipe(postId: number, formData: FormData) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,7 +31,7 @@ export async function updateRecipe(postId: number, formData: FormData) {
       .single();
 
     if (!post || post.user_id !== user.id) {
-      return { error: "Forbidden" };
+      return { success: false as const, error: "Forbidden" as const };
     }
 
     // FormData에서 필드 추출
@@ -49,7 +50,7 @@ export async function updateRecipe(postId: number, formData: FormData) {
       .single();
 
     if (!category) {
-      return { error: "Invalid category" };
+      return { success: false as const, error: "Invalid category" as const };
     }
 
     // 태그 파싱
@@ -75,7 +76,7 @@ export async function updateRecipe(postId: number, formData: FormData) {
 
     if (postError) {
       console.error("Error updating post:", postError);
-      return { error: "Failed to update recipe" };
+      return { success: false as const, error: "Failed to update recipe" as const };
     }
 
     // 기존 post_steps 모두 DELETE
@@ -150,10 +151,10 @@ export async function updateRecipe(postId: number, formData: FormData) {
     revalidatePath(`/recipes/${postId}`);
     revalidatePath("/mypage");
 
-    // 수정된 레시피 상세 페이지로 리다이렉트
-    redirect(`/recipes/${postId}`);
+    // 클라이언트에서 후속 라우팅을 할 수 있도록 결과 반환
+    return { success: true as const };
   } catch (error) {
     console.error("Unexpected error updating recipe:", error);
-    return { error: "An unexpected error occurred" };
+    return { success: false as const, error: "An unexpected error occurred" as const };
   }
 }

@@ -29,6 +29,7 @@ export interface RecipeCardItem {
   category: string; // categories.name (표시용)
   tags: string[];
   createdAt: string; // 포맷된 날짜 문자열
+  initialBookmarked?: boolean;
 }
 
 // =============================================================================
@@ -62,6 +63,7 @@ export interface RecipeDetail {
   steps: StepItem[];
   troubleshooting: {
     aiSummary: string;
+    raw: string;
     notes: TroubleshootingNote[];
   };
 }
@@ -87,6 +89,7 @@ export function recipeDetailRowToDetail(row: RecipeDetailRow, createdAtFormatted
       .map(postStepToStepItem),
     troubleshooting: {
       aiSummary: row.post.ai_summary ?? "",
+      raw: row.post.troubleshooting_raw ?? "",
       notes,
     },
   };

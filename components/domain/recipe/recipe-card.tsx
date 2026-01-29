@@ -1,13 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
-import { toast } from "sonner";
+import { BookmarkButton } from "@/components/domain/recipe/bookmark-button";
 
 interface RecipeCardProps {
   id: number;
@@ -36,30 +31,6 @@ export function RecipeCard({
   createdAt,
   initialBookmarked = false,
 }: RecipeCardProps) {
-  const router = useRouter();
-  const { user } = useAuth();
-  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
-
-  const handleBookmarkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // 비로그인 시 로그인 안내
-    if (!user) {
-      toast.info("로그인이 필요합니다", {
-        description: "북마크 기능을 사용하려면 로그인해주세요.",
-        action: {
-          label: "로그인",
-          onClick: () => router.push("/login"),
-        },
-      });
-      return;
-    }
-
-    // 로그인한 경우 북마크 토글 (실제 API 연동은 상세 페이지에서 처리)
-    setIsBookmarked(!isBookmarked);
-  };
-
   return (
     <Link
       href={`/recipes/${id}`}
@@ -80,20 +51,10 @@ export function RecipeCard({
                 {category}
               </Badge>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              onClick={handleBookmarkClick}
-            >
-              <Bookmark
-                className={`h-4 w-4 ${
-                  isBookmarked
-                    ? "fill-current text-foreground"
-                    : "text-muted-foreground"
-                }`}
-              />
-            </Button>
+            <BookmarkButton
+              recipeId={id}
+              initialBookmarked={initialBookmarked}
+            />
           </div>
           <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
             {description}

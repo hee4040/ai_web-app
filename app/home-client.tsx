@@ -114,6 +114,7 @@ export function HomeClient({
               category={recipe.category}
               tags={recipe.tags}
               createdAt={recipe.createdAt}
+              initialBookmarked={recipe.initialBookmarked}
             />
           ))}
         </div>

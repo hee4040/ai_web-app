@@ -127,12 +127,21 @@ export function EditRecipeForm({
         if (step.imageFile) {
           formData.append(`step-${index}-image`, step.imageFile);
         } else if (step.existingImageUrl) {
-          formData.append(`step-${index}-existing-image`, step.existingImageUrl);
+          formData.append(
+            `step-${index}-existing-image`,
+            step.existingImageUrl
+          );
         }
       });
 
-      await updateRecipe(postId, formData);
-      // redirect는 Server Action에서 처리
+      const result = await updateRecipe(postId, formData);
+
+      if (result && result.success) {
+        router.push(`/recipes/${postId}`);
+      } else {
+        setIsSubmitting(false);
+        console.error("Failed to update recipe:", result?.error);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false);

@@ -19,6 +19,7 @@ interface CreateRecipeInput {
 
 /**
  * 레시피 작성 Server Action
+ * - 성공 시 생성된 post id를 반환하고, 클라이언트에서 라우팅을 처리한다.
  */
 export async function createRecipe(formData: FormData) {
   // NOTE: Supabase typed query inference can degrade to `never` in Server Actions
@@ -54,7 +55,7 @@ export async function createRecipe(formData: FormData) {
       .single();
 
     if (!category) {
-      return { error: "Invalid category" };
+      return { success: false, error: "Invalid category" as const };
     }
 
     // 태그 파싱
@@ -80,7 +81,7 @@ export async function createRecipe(formData: FormData) {
 
     if (postError || !post) {
       console.error("Error creating post:", postError);
-      return { error: "Failed to create recipe" };
+      return { success: false, error: "Failed to create recipe" as const };
     }
 
     // Steps 처리
@@ -140,10 +141,10 @@ export async function createRecipe(formData: FormData) {
     revalidatePath("/");
     revalidatePath(`/recipes/${post.id}`);
 
-    // 생성된 레시피 상세 페이지로 리다이렉트
-    redirect(`/recipes/${post.id}`);
+    // 클라이언트에서 후속 라우팅을 할 수 있도록 결과 반환
+    return { success: true as const, postId: post.id };
   } catch (error) {
     console.error("Unexpected error creating recipe:", error);
-    return { error: "An unexpected error occurred" };
+    return { success: false as const, error: "An unexpected error occurred" as const };
   }
 }

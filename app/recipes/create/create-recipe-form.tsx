@@ -100,8 +100,16 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
         }
       });
 
-      await createRecipe(formData);
-      // redirect는 Server Action에서 처리
+      const result = await createRecipe(formData);
+
+      if (result && result.success) {
+        router.push(`/recipes/${result.postId}`);
+      } else {
+        // 에러 발생 시 다시 편집 가능하도록 버튼 상태 복구
+        setIsSubmitting(false);
+        // TODO: 토스트 등으로 에러 메시지 표시 가능
+        console.error("Failed to create recipe:", result?.error);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false);

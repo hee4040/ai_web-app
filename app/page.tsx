@@ -70,6 +70,36 @@ export default async function Home({ searchParams }: HomeProps) {
 
   // 타입 변환: Post + Category → RecipeCardItem
   const joinedPosts = (posts ?? []) as Array<Post & { categories: Category | null }>;
+  
+  // 현재 로그인한 사용자의 북마크 정보 조회
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let bookmarkedPostIds = new Set<number>();
+
+  if (user && joinedPosts.length > 0) {
+    const { data: bookmarks, error: bookmarksError } = await supabase
+      .from("bookmarks")
+      .select("post_id")
+      .eq("user_id", user.id)
+      .in(
+        "post_id",
+        joinedPosts.map((post) => post.id)
+      );
+
+    if (bookmarksError) {
+      console.error("Error fetching bookmarks:", bookmarksError);
+    }
+
+    if (bookmarks) {
+      bookmarkedPostIds = new Set(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (bookmarks as any[]).map((b) => b.post_id as number)
+      );
+    }
+  }
+
   const recipes: RecipeCardItem[] = joinedPosts.map((postData) => {
     const category = postData.categories;
     return {
@@ -79,6 +109,7 @@ export default async function Home({ searchParams }: HomeProps) {
       category: category?.name || "Unknown",
       tags: postData.tags || [],
       createdAt: formatDate(postData.created_at),
+       initialBookmarked: bookmarkedPostIds.has(postData.id),
     };
   });
 
