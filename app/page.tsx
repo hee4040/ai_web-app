@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { CategoryTabs } from "@/components/domain/recipe/category-tabs";
 import { SortDropdown } from "@/components/domain/recipe/sort-dropdown";
+import { TagFilter } from "@/components/domain/recipe/tag-filter";
 import { RecipeCard } from "@/components/domain/recipe/recipe-card";
 
 // TODO: Replace with actual data from Supabase
@@ -86,14 +87,29 @@ const categories = ["All", "Git", "Docker", "ROS", "Kubernetes", "Python"];
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [sortBy, setSortBy] = useState("latest");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   // TODO: Replace with actual auth state from useAuth hook
   const isLoggedIn = false;
+
+  // 모든 레시피에서 사용 중인 태그 목록 (중복 제거)
+  const availableTags = useMemo(() => {
+    const allTags = recipes.flatMap((recipe) => recipe.tags);
+    return Array.from(new Set(allTags)).sort();
+  }, []);
 
   const filteredAndSortedRecipes = useMemo(() => {
     let filtered = recipes;
 
+    // 카테고리 필터 (태그 없어도 동작)
     if (activeCategory !== "All") {
       filtered = recipes.filter((recipe) => recipe.category === activeCategory);
+    }
+
+    // 태그 필터 (선택된 태그가 모두 포함된 레시피만)
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter((recipe) =>
+        selectedTags.every((tag) => recipe.tags.includes(tag))
+      );
     }
 
     const sorted = [...filtered].sort((a, b) => {
@@ -110,18 +126,38 @@ export default function Home() {
     });
 
     return sorted;
-  }, [activeCategory, sortBy]);
+  }, [activeCategory, sortBy, selectedTags]);
+
+  const handleTagAdd = (tag: string) => {
+    if (!selectedTags.includes(tag)) {
+      setSelectedTags([...selectedTags, tag]);
+    }
+  };
+
+  const handleTagRemove = (tag: string) => {
+    setSelectedTags(selectedTags.filter((t) => t !== tag));
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-5xl px-6 py-8">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <CategoryTabs
-            categories={categories}
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <CategoryTabs
+              categories={categories}
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+            />
+            <SortDropdown value={sortBy} onValueChange={setSortBy} />
+          </div>
+
+          {/* Tag Filter */}
+          <TagFilter
+            selectedTags={selectedTags}
+            availableTags={availableTags}
+            onTagAdd={handleTagAdd}
+            onTagRemove={handleTagRemove}
           />
-          <SortDropdown value={sortBy} onValueChange={setSortBy} />
         </div>
 
         <div className="space-y-4">
@@ -142,7 +178,9 @@ export default function Home() {
         {filteredAndSortedRecipes.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <p className="text-muted-foreground">
-              No recipes found for this category.
+              {selectedTags.length > 0
+                ? "No recipes found matching the selected tags."
+                : "No recipes found for this category."}
             </p>
           </div>
         )}

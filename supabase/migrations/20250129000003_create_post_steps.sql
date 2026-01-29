@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS public.post_steps (
   post_id bigint NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
   sort_order int NOT NULL DEFAULT 0,
   content text NOT NULL,
-  image_url text
+  image_url text,
+  CONSTRAINT post_steps_post_id_sort_order_unique UNIQUE (post_id, sort_order)
 );
 
 CREATE INDEX IF NOT EXISTS idx_post_steps_post_id_sort ON public.post_steps(post_id, sort_order);
