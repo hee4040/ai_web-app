@@ -1,1 +1,2 @@
-// Supabase DB 타입 정의 (자동 생성 예정)
+// Supabase DB 타입 — types/database.ts와 동기화
+export type { Database, Profile, Category, Post, PostStep, Bookmark, PostLike } from "@/types/database";
