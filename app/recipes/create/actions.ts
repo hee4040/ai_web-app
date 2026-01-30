@@ -44,7 +44,39 @@ export async function createRecipe(formData: FormData) {
     const description = formData.get("description") as string;
     const categoryName = formData.get("category") as string;
     const tagsString = formData.get("tags") as string;
-    const troubleshooting = (formData.get("troubleshooting") as string) || "";
+    const troubleshootingNotesRaw = formData.get("troubleshootingNotes") as
+      | string
+      | null;
+    let troubleshootingNotes: Array<{ id: number; title: string; description: string }> = [];
+    let troubleshootingRaw: string | null = null;
+
+    if (troubleshootingNotesRaw) {
+      try {
+        const parsed = JSON.parse(troubleshootingNotesRaw) as Array<{
+          id?: number;
+          title?: string;
+          description?: string;
+        }>;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          troubleshootingNotes = parsed.map((item, idx) => ({
+            id: Number(item?.id) ?? idx + 1,
+            title: String(item?.title ?? "").trim(),
+            description: String(item?.description ?? "").trim(),
+          }));
+          const forAi = troubleshootingNotes
+            .map(
+              (n) =>
+                (n.title ? `${n.title}: ` : "") + n.description
+            )
+            .filter(Boolean)
+            .join("\n\n");
+          if (forAi) troubleshootingRaw = forAi;
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+    }
+
     const isPublic = formData.get("isPublic") === "true";
 
     // 카테고리 ID 조회
@@ -65,17 +97,20 @@ export async function createRecipe(formData: FormData) {
       .filter((tag) => tag.length > 0);
 
     // posts 테이블에 레시피 메인 정보 INSERT
+    const insertPayload = {
+      user_id: user.id,
+      title,
+      description,
+      category_id: category.id,
+      tags,
+      troubleshooting_raw: troubleshootingRaw || null,
+      troubleshooting_notes:
+        troubleshootingNotes.length > 0 ? troubleshootingNotes : [],
+      is_public: isPublic,
+    };
     const { data: post, error: postError } = await supabase
       .from("posts")
-      .insert({
-        user_id: user.id,
-        title,
-        description,
-        category_id: category.id,
-        tags,
-        troubleshooting_raw: troubleshooting || null,
-        is_public: isPublic,
-      })
+      .insert(insertPayload as never)
       .select()
       .single();
 
@@ -140,6 +175,29 @@ export async function createRecipe(formData: FormData) {
     // 캐시 갱신
     revalidatePath("/");
     revalidatePath(`/recipes/${post.id}`);
+
+    // 2.9 AI 보조: 레시피 저장 후 비동기로 AI 분석 호출 (사용자 블로킹 없음)
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const troubleshootingForAi =
+      troubleshootingRaw ||
+      troubleshootingNotes
+        .map((n) => (n.title ? `${n.title}: ` : "") + n.description)
+        .filter(Boolean)
+        .join("\n\n");
+
+    fetch(`${baseUrl}/api/ai/recipe-analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        postId: post.id,
+        troubleshooting: troubleshootingForAi || "",
+        steps: stepInserts.map((s) => ({ content: s.content })),
+        title,
+        category: categoryName,
+      }),
+    }).catch((err) => console.error("Recipe AI analyze trigger failed:", err));
 
     // 클라이언트에서 후속 라우팅을 할 수 있도록 결과 반환
     return { success: true as const, postId: post.id };

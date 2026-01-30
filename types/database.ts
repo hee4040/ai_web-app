@@ -158,6 +158,38 @@ export interface Database {
           created_at?: string;
         };
       };
+      ai_responses: {
+        Row: {
+          id: number;
+          user_id: string | null;
+          prompt: string;
+          response: string;
+          provider: "google" | "groq";
+          category: string;
+          response_time_ms: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          user_id?: string | null;
+          prompt: string;
+          response: string;
+          provider: "google" | "groq";
+          category: string;
+          response_time_ms?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          user_id?: string | null;
+          prompt?: string;
+          response?: string;
+          provider?: "google" | "groq";
+          category?: string;
+          response_time_ms?: number | null;
+          created_at?: string;
+        };
+      };
     };
     Views: { [_ in never]: never };
     Functions: { [_ in never]: never };
@@ -180,3 +212,4 @@ export type Post = Tables<"posts">;
 export type PostStep = Tables<"post_steps">;
 export type Bookmark = Tables<"bookmarks">;
 export type PostLike = Tables<"post_likes">;
+export type AIResponse = Tables<"ai_responses">;

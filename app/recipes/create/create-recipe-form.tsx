@@ -24,6 +24,12 @@ interface Step {
   imagePreview: string | null;
 }
 
+interface TroubleshootingItem {
+  id: number;
+  title: string;
+  description: string;
+}
+
 interface CreateRecipeFormProps {
   categories: Array<{ id: number; name: string }>;
 }
@@ -38,7 +44,9 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
   const [steps, setSteps] = useState<Step[]>([
     { id: 1, description: "", imageFile: null, imagePreview: null },
   ]);
-  const [troubleshooting, setTroubleshooting] = useState("");
+  const [troubleshootingItems, setTroubleshootingItems] = useState<
+    TroubleshootingItem[]
+  >([{ id: 1, title: "", description: "" }]);
   const [isPublic, setIsPublic] = useState(true);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
@@ -79,6 +87,32 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
     );
   };
 
+  const addTroubleshooting = () => {
+    const newId =
+      Math.max(0, ...troubleshootingItems.map((t) => t.id)) + 1;
+    setTroubleshootingItems([
+      ...troubleshootingItems,
+      { id: newId, title: "", description: "" },
+    ]);
+  };
+
+  const removeTroubleshooting = (id: number) => {
+    if (troubleshootingItems.length <= 1) return;
+    setTroubleshootingItems(troubleshootingItems.filter((t) => t.id !== id));
+  };
+
+  const updateTroubleshootingItem = (
+    id: number,
+    field: "title" | "description",
+    value: string
+  ) => {
+    setTroubleshootingItems(
+      troubleshootingItems.map((t) =>
+        t.id === id ? { ...t, [field]: value } : t
+      )
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -89,7 +123,10 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
       formData.append("description", description);
       formData.append("category", category);
       formData.append("tags", tags);
-      formData.append("troubleshooting", troubleshooting);
+      formData.append(
+        "troubleshootingNotes",
+        JSON.stringify(troubleshootingItems)
+      );
       formData.append("isPublic", isPublic.toString());
       formData.append("stepCount", steps.length.toString());
 
@@ -130,7 +167,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
           Create New Recipe
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Share your environment setup with the community
+          커뮤니티와 환경 설정 경험을 공유해 보세요
         </p>
       </div>
 
@@ -145,7 +182,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
-              placeholder="e.g., Setting up Git with SSH on Ubuntu"
+              placeholder="예: Ubuntu에서 Git SSH 설정하기"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -156,7 +193,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="description">Short Description</Label>
             <Textarea
               id="description"
-              placeholder="Briefly describe what this recipe covers..."
+              placeholder="이 레시피에서 다루는 내용을 간단히 적어주세요"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -168,7 +205,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="category">Category</Label>
             <Select value={category} onValueChange={setCategory} required>
               <SelectTrigger id="category">
-                <SelectValue placeholder="Select a category" />
+                <SelectValue placeholder="카테고리를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -184,12 +221,12 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="tags">Environment Tags</Label>
             <Input
               id="tags"
-              placeholder="e.g., Ubuntu 22.04, Git 2.40, SSH"
+              placeholder="예: Ubuntu 22.04, Git 2.40, SSH"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Separate tags with commas
+              태그는 쉼표(,)로 구분해서 입력하세요
             </p>
           </div>
 
@@ -238,7 +275,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
 
                 <div className="flex flex-col gap-3">
                   <Textarea
-                    placeholder="Describe this step..."
+                    placeholder="이 단계에서 할 일을 적어주세요"
                     value={step.description}
                     onChange={(e) =>
                       updateStepDescription(step.id, e.target.value)
@@ -296,7 +333,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             className="gap-2 bg-transparent"
           >
             <Plus className="h-4 w-4" />
-            Add Step
+            Add step
           </Button>
         </section>
 
@@ -305,19 +342,74 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
           <h2 className="border-b border-border pb-2 text-lg font-semibold text-foreground">
             Troubleshooting
           </h2>
+          <p className="text-xs text-muted-foreground">
+            겪었던 문제와 해결 방법을 여러 개 추가할 수 있습니다.
+          </p>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="troubleshooting">Common Issues & Solutions</Label>
-            <Textarea
-              id="troubleshooting"
-              placeholder="Describe any errors you encountered and how you resolved them..."
-              value={troubleshooting}
-              onChange={(e) => setTroubleshooting(e.target.value)}
-              rows={4}
-            />
-            <p className="text-xs text-muted-foreground">
-              Help others avoid common pitfalls by documenting issues you faced
-            </p>
+          <div className="flex flex-col gap-4">
+            {troubleshootingItems.map((item, index) => (
+              <div
+                key={item.id}
+                className="rounded-lg border border-border bg-card p-4"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    #{index + 1}
+                  </span>
+                  {troubleshootingItems.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeTroubleshooting(item.id)}
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  <div className="flex flex-col gap-2">
+                    <Label>제목 (선택)</Label>
+                    <Input
+                      placeholder="예: 권한 오류"
+                      value={item.title}
+                      onChange={(e) =>
+                        updateTroubleshootingItem(
+                          item.id,
+                          "title",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label>내용</Label>
+                    <Textarea
+                      placeholder="발생한 문제와 해결 방법을 적어주세요..."
+                      value={item.description}
+                      onChange={(e) =>
+                        updateTroubleshootingItem(
+                          item.id,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addTroubleshooting}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Troubleshooting
+            </Button>
           </div>
         </section>
 
@@ -333,7 +425,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Link href="/">Cancel</Link>
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Publishing..." : "Publish Recipe"}
+            {isSubmitting ? "Registering..." : "Register"}
           </Button>
         </div>
       </form>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Terminal, Plus, LogIn } from "lucide-react";
+import { Terminal, Plus, LogIn, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { UserMenu } from "@/components/domain/auth/user-menu";
@@ -21,6 +21,12 @@ export function Header() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="gap-2" asChild>
+            <Link href="/ai-test">
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">AI 테스트</span>
+            </Link>
+          </Button>
           {user && (
             <Button variant="outline" size="sm" className="gap-2 bg-transparent" asChild>
               <Link href="/recipes/create">

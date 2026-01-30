@@ -12,6 +12,8 @@
 | 6 | `20250129000005_create_post_likes.sql` | post_likes 테이블 |
 | 7 | `20250129000006_create_triggers.sql` | handle_new_user, posts.updated_at 트리거 |
 | 8 | `20250129000007_setup_rls_policies.sql` | RLS 활성화 + 정책 |
+| 9 | `002_ai_responses.sql` | ai_responses 테이블 (멀티 AI 응답 저장) |
+| 10 | `003_ai_responses_allow_null_user.sql` | ai_responses RLS 정책 (user_id null 허용) |
 
 **적용 방법**
 

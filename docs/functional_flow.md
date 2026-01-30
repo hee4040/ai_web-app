@@ -415,22 +415,22 @@
 
 ---
 
-### 2.9 AI 보조 기능 호출 및 결과 저장 (API Route + Server Action)
+### 2.9 AI 보조 기능 호출 및 결과 저장 (API Route + Server Action) ✅
 
 **데이터 흐름**: 레시피 저장 후 → AI API 호출 → 결과 파싱 → `posts` UPDATE (ai_summary, ai_keywords, troubleshooting_notes)
 
 **기술 스택**:
-- `app/api/ai/route.ts` (API Route)
-- `app/recipes/create/actions.ts` 또는 백그라운드 작업
-- 외부 AI API (OpenAI, Anthropic 등)
-- `supabase.from('posts').update().eq('id', postId)`
+- `app/api/ai/recipe-analyze/route.ts` (API Route)
+- `app/recipes/create/actions.ts` (레시피 저장 후 비동기 fetch 호출)
+- Google Gemini (`@ai-sdk/google`)
+- `lib/supabase/admin.ts` (Service Role) → `supabase.from('posts').update().eq('id', postId)`
 
 **구현 내용**:
-- [ ] 레시피 저장 후 비동기로 AI API 호출 (사용자 블로킹 없음)
-- [ ] AI API에 troubleshooting 텍스트, steps, title, category 전달
-- [ ] AI 응답 파싱 (summary, keywords, notes)
-- [ ] `posts` 테이블 UPDATE (ai_summary, ai_keywords, troubleshooting_notes)
-- [ ] 에러 처리 (AI 실패해도 레시피는 저장됨)
+- [x] 레시피 저장 후 비동기로 AI API 호출 (사용자 블로킹 없음)
+- [x] AI API에 troubleshooting 텍스트, steps, title, category 전달
+- [x] AI 응답 파싱 (summary, keywords, notes)
+- [x] `posts` 테이블 UPDATE (ai_summary, ai_keywords, troubleshooting_notes)
+- [x] 에러 처리 (AI 실패해도 레시피는 저장됨)
 
 **상태 관리**:
 - 클라이언트: 없음 (백그라운드 작업)
@@ -438,6 +438,34 @@
 
 **UI 바인딩**:
 - `components/domain/recipe/troubleshooting-section.tsx` - AI 결과 표시 (있으면)
+
+---
+
+### 2.9-1 멀티 AI 엔진 (Google & Groq) + ai_responses 저장 ✅
+
+**데이터 흐름**: 사용자 메시지 → API Route (provider 분기) → Google/Groq API 호출 → 응답 생성 → `ai_responses` INSERT → UI에 응답 표시
+
+**기술 스택**:
+- `app/api/ai/multi-engine/route.ts` (API Route)
+- `@ai-sdk/google`, `@ai-sdk/groq`, `ai` (Vercel AI SDK)
+- `supabase.from('ai_responses').insert()`
+- `app/ai-test/page.tsx`, `components/ai/multi-engine-chat.tsx`
+
+**구현 내용**:
+- [x] 멀티 엔진 API Route 구현 (Google Gemini / Groq Llama)
+- [x] provider에 따라 `gemini-1.5-flash-latest` 또는 `llama-3.3-70b-versatile` 호출
+- [x] AI 응답 완료 시 `ai_responses` 테이블에 저장 (user_id, prompt, response, provider, category, response_time_ms)
+- [x] 할당량 초과 시 맞춤 에러 메시지 (Groq 전환 안내)
+- [x] 챗봇 UI (대화 내역 유지, Enter 전송, 로딩 상태)
+- [x] 헤더에 "AI 테스트" 링크 추가
+
+**상태 관리**:
+- 클라이언트: 메시지 목록, 로딩, 엔진 선택
+- 서버: 없음 (API Route 내부 처리)
+
+**UI 바인딩**:
+- `app/ai-test/page.tsx` - AI 채팅 페이지
+- `components/common/Header.tsx` - AI 테스트 버튼
 
 ---
 
@@ -830,11 +858,12 @@
 | 2.6 | 레시피 수정 데이터 제출 | [x] | [ ] | `app/recipes/[id]/edit/actions.ts` |
 | 2.7 | 레시피 삭제 | [x] | [ ] | `app/mypage/actions.ts` |
 | 2.8 | 공개/비공개 토글 | [x] | [ ] | `app/mypage/actions.ts`, `app/mypage/page.tsx` |
-| 2.9 | AI 보조 기능 호출 및 결과 저장 | [ ] | [ ] | `app/api/ai/route.ts`, `app/recipes/create/actions.ts` (제외) |
+| 2.9 | AI 보조 기능 호출 및 결과 저장 (레시피→posts UPDATE) | [x] | [ ] | `app/api/ai/recipe-analyze/route.ts`, `app/recipes/create/actions.ts` |
+| 2.9-1 | 멀티 AI 엔진 (Google & Groq) + ai_responses 저장 | [x] | [ ] | `app/api/ai/multi-engine/route.ts`, `app/ai-test/page.tsx`, `components/ai/multi-engine-chat.tsx` |
 | 2.10 | 북마크한 레시피 목록 페칭 | [x] | [ ] | `app/mypage/page.tsx` |
 | 2.11 | 북마크 추가/삭제 | [x] | [ ] | `app/recipes/[id]/actions.ts`, `components/domain/recipe/bookmark-button.tsx` |
 
-**Phase 2 완료율**: 10 / 11 (AI 보조 기능 제외)
+**Phase 2 완료율**: 12 / 12 (100%)
 
 ---
 
@@ -862,9 +891,9 @@
 | Phase | 완료 | 전체 | 비율 |
 |-------|-----:|-----:|------|
 | Phase 1 | 7 | 7 | 100% |
-| Phase 2 | 10 | 11 | 91% (AI 제외) |
+| Phase 2 | 12 | 12 | 100% |
 | Phase 3 | 1 | 10 | 10% |
-| **합계** | **18** | **28** | **64%** |
+| **합계** | **20** | **29** | **69%** |
 
 ---
 
@@ -967,11 +996,21 @@
 - [x] `revalidatePath` 호출
 - [x] 마이페이지 토글 버튼 연동
 
-#### 2.9 AI 보조 기능
-- [ ] AI API Route 구현 (이번 작업 범위에서 제외)
-- [ ] 레시피 저장 후 비동기 AI 호출 (이번 작업 범위에서 제외)
-- [ ] `posts` UPDATE (ai_summary, ai_keywords, troubleshooting_notes) (이번 작업 범위에서 제외)
-- [ ] 에러 처리 (실패해도 레시피 유지) (이번 작업 범위에서 제외)
+#### 2.9 AI 보조 기능 (레시피→posts UPDATE)
+- [x] AI API Route 구현 (`app/api/ai/recipe-analyze/route.ts`)
+- [x] 레시피 저장 후 비동기 AI 호출 (createRecipe에서 fetch 호출, await 없음)
+- [x] AI API에 troubleshooting, steps, title, category 전달
+- [x] AI 응답 파싱 (summary, keywords, notes) → `posts` UPDATE
+- [x] 에러 처리 (AI 실패해도 레시피는 저장됨)
+- [x] TroubleshootingSection에 AI 결과 표시 (있으면)
+
+#### 2.9-1 멀티 AI 엔진 + ai_responses 저장
+- [x] API Route `app/api/ai/multi-engine/route.ts` 구현
+- [x] Google Gemini (`gemini-1.5-flash-latest`) / Groq (`llama-3.3-70b-versatile`) 분기
+- [x] `ai_responses` 테이블 INSERT (prompt, response, provider, category, response_time_ms)
+- [x] 할당량 초과 에러 처리 및 Groq 전환 안내
+- [x] 챗봇 UI (대화 내역, 로딩, Enter 전송)
+- [x] `/ai-test` 페이지 및 헤더 링크
 
 #### 2.10 북마크 목록 페칭
 - [x] `bookmarks` + `posts` + `categories` + `profiles` 조인 조회
@@ -1032,9 +1071,15 @@
 
 ---
 
-**마지막 업데이트**: 2025-01-29
+**마지막 업데이트**: 2026-01-30
 
 **최근 업데이트 내용**:
+- **트러블슈팅 여러 개** 지원: 작성/수정 폼에서 추가 버튼으로 항목 추가, `troubleshooting_notes` 저장
+- **Troubleshooting UI**: "Common Issues & Solutions" raw 박스 제거, AI Summary + Notes 카드만 표시
+- **2.9 AI 보조 기능 (레시피→posts UPDATE)** 구현 완료
+  - `app/api/ai/recipe-analyze/route.ts`, createRecipe에서 비동기 호출, posts UPDATE (ai_summary, ai_keywords, troubleshooting_notes)
+- **2.9-1 멀티 AI 엔진 (Google & Groq) + ai_responses 저장** 구현 완료
+  - API Route (`/api/ai/multi-engine`), 챗봇 UI (`/ai-test`), 헤더 링크 추가
 - 3.5 성공 피드백 (Toast) 구현 완료
 - 2.1 공개 레시피 목록에 북마크 상태 포함
 - 2.2 Troubleshooting 섹션에 raw 필드 표시 개선

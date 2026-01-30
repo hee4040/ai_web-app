@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EditRecipeForm } from "./edit-recipe-form";
 import type { Post, PostStep, Category } from "@/types/database";
+import type { TroubleshootingNote } from "@/types/recipe";
 import { postStepToStepItem } from "@/types/recipe";
 
 interface EditRecipePageProps {
@@ -70,6 +71,23 @@ export default async function EditRecipePage({
     .select("*")
     .order("sort_order", { ascending: true });
 
+  // 트러블슈팅: notes 배열이 있으면 사용, 없으면 raw로 1개 항목 구성
+  const notes = (postData.troubleshooting_notes as TroubleshootingNote[] | null) ?? [];
+  const troubleshootingNotes =
+    notes.length > 0
+      ? notes.map((n, idx) => ({
+          id: n.id ?? idx + 1,
+          title: n.title ?? "",
+          description: n.description ?? "",
+        }))
+      : [
+          {
+            id: 1,
+            title: "",
+            description: postData.troubleshooting_raw || "",
+          },
+        ];
+
   // 초기 데이터 준비
   const initialData = {
     title: postData.title,
@@ -77,7 +95,7 @@ export default async function EditRecipePage({
     category: postData.categories?.name || "",
     tags: postData.tags.join(", "),
     steps: stepsData.map(postStepToStepItem),
-    troubleshooting: postData.troubleshooting_raw || "",
+    troubleshootingNotes,
     isPublic: postData.is_public,
   };
 
