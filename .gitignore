@@ -42,3 +42,7 @@ next-env.d.ts
 
 # # backup source (tmp-v0)
 # tmp-v0/
+
+# pnpm
+.pnpm-store
+node_modules

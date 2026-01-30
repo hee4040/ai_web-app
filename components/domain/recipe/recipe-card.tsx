@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { BookmarkButton } from "@/components/domain/recipe/bookmark-button";
 
 interface RecipeCardProps {
   id: number;
@@ -13,7 +11,6 @@ interface RecipeCardProps {
   category: string;
   tags: string[];
   createdAt: string;
-  isLoggedIn?: boolean;
   initialBookmarked?: boolean;
 }
 
@@ -32,18 +29,8 @@ export function RecipeCard({
   category,
   tags,
   createdAt,
-  isLoggedIn = false,
   initialBookmarked = false,
 }: RecipeCardProps) {
-  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
-
-  const handleBookmarkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsBookmarked(!isBookmarked);
-    // TODO: Phase 2 - 북마크 API 연동
-  };
-
   return (
     <Link
       href={`/recipes/${id}`}
@@ -64,20 +51,10 @@ export function RecipeCard({
                 {category}
               </Badge>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              onClick={handleBookmarkClick}
-            >
-              <Bookmark
-                className={`h-4 w-4 ${
-                  isBookmarked
-                    ? "fill-current text-foreground"
-                    : "text-muted-foreground"
-                }`}
-              />
-            </Button>
+            <BookmarkButton
+              recipeId={id}
+              initialBookmarked={initialBookmarked}
+            />
           </div>
           <p className="text-sm leading-relaxed text-muted-foreground line-clamp-2">
             {description}

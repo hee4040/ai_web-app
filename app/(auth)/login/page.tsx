@@ -1,8 +1,42 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user, loading, signInWithGoogle } = useAuth();
+
+  // 이미 로그인한 경우 홈으로 리다이렉트
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/");
+    }
+  }, [user, loading, router]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (user) {
+    return null; // 리다이렉트 중
+  }
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm">
@@ -24,6 +58,7 @@ export default function LoginPage() {
           <Button
             variant="outline"
             className="h-11 w-full gap-3 bg-card text-sm font-medium"
+            onClick={handleGoogleSignIn}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
