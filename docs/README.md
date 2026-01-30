@@ -2,6 +2,8 @@
 
 프로젝트 문서 목록과 용도를 정리한 인덱스입니다.
 
+**문서 파일명 규칙**: 기획/스펙은 `UPPER_SNAKE.md` 또는 `PascalCase.md`, 가이드/설정은 `kebab-case.md`가 혼용됩니다. 링크는 이 인덱스와 각 문서 내 상대 경로를 기준으로 합니다.
+
 ---
 
 ## 📋 기획·요구사항
@@ -58,6 +60,7 @@
 | [STEP3_STEP4_PLAN.md](STEP3_STEP4_PLAN.md) | Step 3/4 계획 |
 | [TAG_FILTER_IMPLEMENTATION.md](TAG_FILTER_IMPLEMENTATION.md) | 태그 필터 구현 |
 | [history/](history/) | 변경 이력 (001-initial-setup, 002-ui-migration 등) |
+| [CLEANUP_NOTES.md](CLEANUP_NOTES.md) | 코드·문서 정리 노트 (미사용 파일, README Git 점검) |
 
 ---
 

@@ -802,7 +802,7 @@ export default function CreateRecipePage() {
 
 **목표**: 레시피 저장 시 AI API 호출 → 결과 DB 저장
 
-#### 6.1 AI API Route 업데이트 (`app/api/ai/route.ts`)
+#### 6.1 AI API Route (구현됨: `app/api/ai/recipe-analyze/route.ts`)
 
 ```typescript
 import { createClient } from "@/lib/supabase/server"
@@ -869,15 +869,15 @@ export async function POST(request: NextRequest) {
 
 // AI 보조 기능 호출 (비동기)
 if (troubleshootingRaw) {
-  fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ai`, {
+  fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/ai/recipe-analyze`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      troubleshooting: troubleshootingRaw,
-      steps: stepsData.map(s => s.content),
-      title,
-      category: categoryId,
       postId: post.id,
+      troubleshooting: troubleshootingRaw,
+      steps: stepsData.map(s => ({ content: s.content ?? s })),
+      title,
+      category: String(categoryId),
     }),
   }).catch(console.error) // 에러는 로그만, 사용자 블로킹 없음
 }

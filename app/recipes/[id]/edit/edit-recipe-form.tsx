@@ -196,7 +196,7 @@ export function EditRecipeForm({
           Edit Recipe
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Update your environment setup recipe
+          환경 설정 레시피를 수정하세요
         </p>
       </div>
 
@@ -211,7 +211,7 @@ export function EditRecipeForm({
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
-              placeholder="e.g., Setting up Git with SSH on Ubuntu"
+              placeholder="예: Ubuntu에서 Git SSH 설정하기"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -222,7 +222,7 @@ export function EditRecipeForm({
             <Label htmlFor="description">Short Description</Label>
             <Textarea
               id="description"
-              placeholder="Briefly describe what this recipe covers..."
+              placeholder="이 레시피에서 다루는 내용을 간단히 적어주세요"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -234,7 +234,7 @@ export function EditRecipeForm({
             <Label htmlFor="category">Category</Label>
             <Select value={category} onValueChange={setCategory} required>
               <SelectTrigger id="category">
-                <SelectValue placeholder="Select a category" />
+                <SelectValue placeholder="카테고리를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -250,12 +250,12 @@ export function EditRecipeForm({
             <Label htmlFor="tags">Environment Tags</Label>
             <Input
               id="tags"
-              placeholder="e.g., Ubuntu 22.04, Git 2.40, SSH"
+              placeholder="예: Ubuntu 22.04, Git 2.40, SSH"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Separate tags with commas
+              태그는 쉼표(,)로 구분해서 입력하세요
             </p>
           </div>
 
@@ -268,7 +268,7 @@ export function EditRecipeForm({
               className="h-4 w-4 rounded border-border"
             />
             <Label htmlFor="isPublic" className="cursor-pointer">
-              Make this recipe public
+              Macke this recipe public
             </Label>
           </div>
         </section>
@@ -304,7 +304,7 @@ export function EditRecipeForm({
 
                 <div className="flex flex-col gap-3">
                   <Textarea
-                    placeholder="Describe this step..."
+                    placeholder="이 단계에서 할 일을 적어주세요"
                     value={step.description}
                     onChange={(e) =>
                       updateStepDescription(step.id, e.target.value)
@@ -379,7 +379,7 @@ export function EditRecipeForm({
             className="gap-2 bg-transparent"
           >
             <Plus className="h-4 w-4" />
-            Add Step
+            Add step
           </Button>
         </section>
 
@@ -454,7 +454,7 @@ export function EditRecipeForm({
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
-              트러블슈팅 추가
+              Add Troubleshooting
             </Button>
           </div>
         </section>

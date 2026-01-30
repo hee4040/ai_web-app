@@ -167,7 +167,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
           Create New Recipe
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Share your environment setup with the community
+          커뮤니티와 환경 설정 경험을 공유해 보세요
         </p>
       </div>
 
@@ -182,7 +182,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
-              placeholder="e.g., Setting up Git with SSH on Ubuntu"
+              placeholder="예: Ubuntu에서 Git SSH 설정하기"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -193,7 +193,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="description">Short Description</Label>
             <Textarea
               id="description"
-              placeholder="Briefly describe what this recipe covers..."
+              placeholder="이 레시피에서 다루는 내용을 간단히 적어주세요"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -205,7 +205,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="category">Category</Label>
             <Select value={category} onValueChange={setCategory} required>
               <SelectTrigger id="category">
-                <SelectValue placeholder="Select a category" />
+                <SelectValue placeholder="카테고리를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -221,12 +221,12 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Label htmlFor="tags">Environment Tags</Label>
             <Input
               id="tags"
-              placeholder="e.g., Ubuntu 22.04, Git 2.40, SSH"
+              placeholder="예: Ubuntu 22.04, Git 2.40, SSH"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Separate tags with commas
+              태그는 쉼표(,)로 구분해서 입력하세요
             </p>
           </div>
 
@@ -275,7 +275,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
 
                 <div className="flex flex-col gap-3">
                   <Textarea
-                    placeholder="Describe this step..."
+                    placeholder="이 단계에서 할 일을 적어주세요"
                     value={step.description}
                     onChange={(e) =>
                       updateStepDescription(step.id, e.target.value)
@@ -333,7 +333,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             className="gap-2 bg-transparent"
           >
             <Plus className="h-4 w-4" />
-            Add Step
+            Add step
           </Button>
         </section>
 
@@ -408,7 +408,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
-              트러블슈팅 추가
+              Add Troubleshooting
             </Button>
           </div>
         </section>
@@ -425,7 +425,7 @@ export function CreateRecipeForm({ categories }: CreateRecipeFormProps) {
             <Link href="/">Cancel</Link>
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Publishing..." : "Publish Recipe"}
+            {isSubmitting ? "Registering..." : "Register"}
           </Button>
         </div>
       </form>
