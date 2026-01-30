@@ -93,15 +93,11 @@ export function RecipeDetailView({
         </div>
       </section>
 
-      {(recipe.troubleshooting.aiSummary ||
-        recipe.troubleshooting.raw ||
-        recipe.troubleshooting.notes.length > 0) && (
-        <TroubleshootingSection
-          aiSummary={recipe.troubleshooting.aiSummary}
-          raw={recipe.troubleshooting.raw}
-          notes={recipe.troubleshooting.notes}
-        />
-      )}
+      <TroubleshootingSection
+        aiSummary={recipe.troubleshooting.aiSummary}
+        raw={recipe.troubleshooting.raw}
+        notes={recipe.troubleshooting.notes}
+      />
     </main>
   );
 }

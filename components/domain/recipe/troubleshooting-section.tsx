@@ -17,12 +17,14 @@ export function TroubleshootingSection({
   raw,
   notes = [],
 }: TroubleshootingSectionProps) {
+  const hasAny = !!(aiSummary || raw || (notes && notes.length > 0));
+
   return (
     <section className="space-y-6">
       <h2 className="text-xl font-semibold text-foreground">Troubleshooting</h2>
 
       {/* AI Summary가 있으면 파란 박스로 표시 */}
-      {aiSummary && (
+      {aiSummary ? (
         <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-5">
           <div className="flex items-start gap-3">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-500/15">
@@ -36,19 +38,13 @@ export function TroubleshootingSection({
             </div>
           </div>
         </div>
-      )}
-
-      {/* 수동으로 작성한 텍스트가 있으면 별도 섹션으로 표시 */}
-      {raw && (
-        <div className="rounded-lg border border-border bg-card p-5">
-          <h3 className="mb-3 text-sm font-medium text-card-foreground">
-            Common Issues & Solutions
-          </h3>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-            {raw}
+      ) : raw ? (
+        <div className="rounded-lg border border-dashed border-border bg-muted/30 p-4">
+          <p className="text-sm text-muted-foreground">
+            AI 요약 생성 중… 잠시 후 새로고침하면 표시됩니다.
           </p>
         </div>
-      )}
+      ) : null}
 
       {/* Notes가 있으면 카드 리스트로 표시 */}
       {notes.length > 0 && (
@@ -67,6 +63,13 @@ export function TroubleshootingSection({
             </div>
           ))}
         </div>
+      )}
+
+      {/* 모두 비어 있을 때 */}
+      {!hasAny && (
+        <p className="text-sm text-muted-foreground">
+          트러블슈팅 정보가 없습니다. 레시피 작성 시 &quot;Common Issues & Solutions&quot;를 입력하면 AI가 요약을 생성합니다.
+        </p>
       )}
     </section>
   );

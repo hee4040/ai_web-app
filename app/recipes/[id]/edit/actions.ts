@@ -39,7 +39,36 @@ export async function updateRecipe(postId: number, formData: FormData) {
     const description = formData.get("description") as string;
     const categoryName = formData.get("category") as string;
     const tagsString = formData.get("tags") as string;
-    const troubleshooting = (formData.get("troubleshooting") as string) || "";
+    const troubleshootingNotesRaw = formData.get("troubleshootingNotes") as
+      | string
+      | null;
+    let troubleshootingNotes: Array<{ id: number; title: string; description: string }> = [];
+    let troubleshootingRaw: string | null = null;
+
+    if (troubleshootingNotesRaw) {
+      try {
+        const parsed = JSON.parse(troubleshootingNotesRaw) as Array<{
+          id?: number;
+          title?: string;
+          description?: string;
+        }>;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          troubleshootingNotes = parsed.map((item, idx) => ({
+            id: Number(item?.id) ?? idx + 1,
+            title: String(item?.title ?? "").trim(),
+            description: String(item?.description ?? "").trim(),
+          }));
+          const forAi = troubleshootingNotes
+            .map((n) => (n.title ? `${n.title}: ` : "") + n.description)
+            .filter(Boolean)
+            .join("\n\n");
+          if (forAi) troubleshootingRaw = forAi;
+        }
+      } catch {
+        // ignore invalid JSON
+      }
+    }
+
     const isPublic = formData.get("isPublic") === "true";
 
     // 카테고리 ID 조회
@@ -60,17 +89,20 @@ export async function updateRecipe(postId: number, formData: FormData) {
       .filter((tag) => tag.length > 0);
 
     // posts 테이블 UPDATE
+    const updatePayload = {
+      title,
+      description,
+      category_id: category.id,
+      tags,
+      troubleshooting_raw: troubleshootingRaw || null,
+      troubleshooting_notes:
+        troubleshootingNotes.length > 0 ? troubleshootingNotes : [],
+      is_public: isPublic,
+      updated_at: new Date().toISOString(),
+    };
     const { error: postError } = await supabase
       .from("posts")
-      .update({
-        title,
-        description,
-        category_id: category.id,
-        tags,
-        troubleshooting_raw: troubleshooting || null,
-        is_public: isPublic,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload as never)
       .eq("id", postId)
       .eq("user_id", user.id);
 

@@ -27,6 +27,12 @@ interface Step {
   existingImageUrl: string | null;
 }
 
+interface TroubleshootingItem {
+  id: number;
+  title: string;
+  description: string;
+}
+
 interface EditRecipeFormProps {
   postId: number;
   categories: Category[];
@@ -36,7 +42,7 @@ interface EditRecipeFormProps {
     category: string;
     tags: string;
     steps: StepItem[];
-    troubleshooting: string;
+    troubleshootingNotes: TroubleshootingItem[];
     isPublic: boolean;
   };
 }
@@ -61,9 +67,9 @@ export function EditRecipeForm({
       existingImageUrl: step.imageUrl || null,
     }))
   );
-  const [troubleshooting, setTroubleshooting] = useState(
-    initialData.troubleshooting
-  );
+  const [troubleshootingItems, setTroubleshootingItems] = useState<
+    TroubleshootingItem[]
+  >(initialData.troubleshootingNotes);
   const [isPublic, setIsPublic] = useState(initialData.isPublic);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
@@ -108,6 +114,31 @@ export function EditRecipeForm({
     );
   };
 
+  const addTroubleshooting = () => {
+    const newId = Math.max(0, ...troubleshootingItems.map((t) => t.id)) + 1;
+    setTroubleshootingItems([
+      ...troubleshootingItems,
+      { id: newId, title: "", description: "" },
+    ]);
+  };
+
+  const removeTroubleshooting = (id: number) => {
+    if (troubleshootingItems.length <= 1) return;
+    setTroubleshootingItems(troubleshootingItems.filter((t) => t.id !== id));
+  };
+
+  const updateTroubleshootingItem = (
+    id: number,
+    field: "title" | "description",
+    value: string
+  ) => {
+    setTroubleshootingItems(
+      troubleshootingItems.map((t) =>
+        t.id === id ? { ...t, [field]: value } : t
+      )
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -118,7 +149,10 @@ export function EditRecipeForm({
       formData.append("description", description);
       formData.append("category", category);
       formData.append("tags", tags);
-      formData.append("troubleshooting", troubleshooting);
+      formData.append(
+        "troubleshootingNotes",
+        JSON.stringify(troubleshootingItems)
+      );
       formData.append("isPublic", isPublic.toString());
       formData.append("stepCount", steps.length.toString());
 
@@ -354,19 +388,74 @@ export function EditRecipeForm({
           <h2 className="border-b border-border pb-2 text-lg font-semibold text-foreground">
             Troubleshooting
           </h2>
+          <p className="text-xs text-muted-foreground">
+            겪었던 문제와 해결 방법을 여러 개 추가할 수 있습니다.
+          </p>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="troubleshooting">Common Issues & Solutions</Label>
-            <Textarea
-              id="troubleshooting"
-              placeholder="Describe any errors you encountered and how you resolved them..."
-              value={troubleshooting}
-              onChange={(e) => setTroubleshooting(e.target.value)}
-              rows={4}
-            />
-            <p className="text-xs text-muted-foreground">
-              Help others avoid common pitfalls by documenting issues you faced
-            </p>
+          <div className="flex flex-col gap-4">
+            {troubleshootingItems.map((item, index) => (
+              <div
+                key={item.id}
+                className="rounded-lg border border-border bg-card p-4"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    #{index + 1}
+                  </span>
+                  {troubleshootingItems.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeTroubleshooting(item.id)}
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  <div className="flex flex-col gap-2">
+                    <Label>제목 (선택)</Label>
+                    <Input
+                      placeholder="예: 권한 오류"
+                      value={item.title}
+                      onChange={(e) =>
+                        updateTroubleshootingItem(
+                          item.id,
+                          "title",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label>내용</Label>
+                    <Textarea
+                      placeholder="발생한 문제와 해결 방법을 적어주세요..."
+                      value={item.description}
+                      onChange={(e) =>
+                        updateTroubleshootingItem(
+                          item.id,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addTroubleshooting}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              트러블슈팅 추가
+            </Button>
           </div>
         </section>
 
