@@ -846,14 +846,14 @@
 | 3.2 | 에러 상태 관리 및 표시 | [ ] | [ ] | 각 페이지, `components/ui/alert.tsx` |
 | 3.3 | 폼 유효성 검사 | [ ] | [ ] | `components/domain/recipe/recipe-form.tsx` |
 | 3.4 | 낙관적 업데이트 | [ ] | [ ] | 북마크/공개토글 관련 컴포넌트 |
-| 3.5 | 성공 피드백 (Toast) | [ ] | [ ] | `app/layout.tsx`, Server Action 호출부 |
+| 3.5 | 성공 피드백 (Toast) | [x] | [ ] | `app/layout.tsx`, Server Action 호출부 |
 | 3.6 | 이미지 업로드 진행 상태 | [ ] | [ ] | `components/domain/recipe/step-editor.tsx` |
 | 3.7 | 검색 기능 (제목 기반) | [ ] | [ ] | `app/page.tsx`, 검색 컴포넌트 |
 | 3.8 | 태그 필터링 (다중 선택) | [ ] | [ ] | `app/page.tsx`, `components/domain/recipe/tag-filter.tsx` |
 | 3.9 | 무한 스크롤/페이지네이션 (선택) | [ ] | [ ] | `components/domain/recipe/recipe-list.tsx` |
 | 3.10 | 프로필 정보 표시 및 업데이트 | [ ] | [ ] | `components/domain/auth/user-menu.tsx`, `app/mypage/page.tsx` |
 
-**Phase 3 완료율**: 0 / 10
+**Phase 3 완료율**: 1 / 10
 
 ---
 
@@ -863,8 +863,8 @@
 |-------|-----:|-----:|------|
 | Phase 1 | 7 | 7 | 100% |
 | Phase 2 | 10 | 11 | 91% (AI 제외) |
-| Phase 3 | 0 | 10 | 0% |
-| **합계** | **17** | **28** | **61%** |
+| Phase 3 | 1 | 10 | 10% |
+| **합계** | **18** | **28** | **64%** |
 
 ---
 
@@ -920,12 +920,14 @@
 - [x] `is_public = true` 필터
 - [x] URL 파라미터 기반 카테고리/정렬
 - [x] RecipeList에 데이터 전달
+- [x] 북마크 상태 조회 및 전달 (로그인한 사용자)
 
 #### 2.2 레시피 상세 페칭
 - [x] `posts` 단건 조회 (categories, profiles 조인)
 - [x] `post_steps` 조회 및 정렬
 - [x] `notFound()` 처리
 - [x] RecipeDetail, StepCard, TroubleshootingSection 바인딩
+- [x] Troubleshooting 섹션에 raw 필드 표시 (AI 요약 없어도 수동 작성 내용 표시)
 
 #### 2.3 레시피 작성
 - [x] Server Action 인증 확인
@@ -980,6 +982,7 @@
 - [x] `bookmarks` INSERT/DELETE
 - [x] BookmarkButton 연동
 - [x] `revalidatePath` 호출
+- [x] 메인 페이지 레시피 카드에서도 북마크 상태 표시 및 토글 가능
 
 #### 3.1 로딩 상태
 - [ ] 페칭 훅에 `loading` 상태 추가
@@ -1000,8 +1003,9 @@
 - [ ] 실패 시 롤백
 
 #### 3.5 성공 피드백
-- [ ] Toast 라이브러리 설정
-- [ ] 생성/수정/삭제/북마크 성공 시 Toast 표시
+- [x] Toast 라이브러리 설정 (sonner)
+- [x] 생성/수정/삭제/북마크 성공 시 Toast 표시
+- [x] 비로그인 시 로그인 안내 Toast 표시
 
 #### 3.6 이미지 업로드 진행
 - [ ] 업로드 중 상태 표시
@@ -1029,3 +1033,9 @@
 ---
 
 **마지막 업데이트**: 2025-01-29
+
+**최근 업데이트 내용**:
+- 3.5 성공 피드백 (Toast) 구현 완료
+- 2.1 공개 레시피 목록에 북마크 상태 포함
+- 2.2 Troubleshooting 섹션에 raw 필드 표시 개선
+- 2.11 메인 페이지 레시피 카드에서 북마크 토글 기능 추가
