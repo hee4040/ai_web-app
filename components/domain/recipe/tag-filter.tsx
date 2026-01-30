@@ -53,8 +53,8 @@ export function TagFilter({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card p-3">
-      {/* 왼쪽: Tags 라벨 + 선택된 태그 칩 */}
+    <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-3">
+      {/* 1행: Tags 라벨 + 선택된 태그 칩 (넘치면 줄바꿈) */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium text-muted-foreground">Tags:</span>
         {selectedTags.map((tag) => (
@@ -76,24 +76,29 @@ export function TagFilter({
         ))}
       </div>
 
-      {/* 오른쪽: 입력 필드 + 드롭다운 */}
-      <div className="flex shrink-0 items-center gap-2">
+      {/* 2행: 태그 고르는 상자 (항상 아래 줄이라 화면에서 잘리지 않음) */}
+      <div className="flex flex-wrap items-center gap-2">
         <Input
           type="text"
           placeholder="Type tag and press Enter"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleInputKeyDown}
-          className="h-7 w-[180px] text-xs"
+          className="h-7 min-w-0 flex-1 text-xs sm:w-[180px] sm:flex-none"
         />
         {unselectedTags.length > 0 && (
           <>
             <span className="text-xs text-muted-foreground">or</span>
             <Select value="" onValueChange={handleSelectChange}>
-              <SelectTrigger className="h-7 w-[120px] border-border bg-transparent text-xs">
+              <SelectTrigger className="h-7 w-[120px] shrink-0 border-border bg-transparent text-xs">
                 <SelectValue placeholder="Select tag" />
               </SelectTrigger>
-              <SelectContent className="border-border bg-popover">
+              <SelectContent
+                className="border-border bg-popover"
+                position="popper"
+                sideOffset={4}
+                collisionPadding={8}
+              >
                 {unselectedTags.map((tag) => (
                   <SelectItem key={tag} value={tag} className="text-xs">
                     {tag}

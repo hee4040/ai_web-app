@@ -5,6 +5,7 @@ import { Terminal, Plus, LogIn, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { UserMenu } from "@/components/domain/auth/user-menu";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 
 export function Header() {
   const { user, loading } = useAuth();
@@ -21,6 +22,7 @@ export function Header() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="sm" className="gap-2" asChild>
             <Link href="/ai-test">
               <Sparkles className="h-4 w-4" />
